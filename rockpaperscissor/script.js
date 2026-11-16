@@ -1,44 +1,50 @@
 console.log("Welcome to Rock Paper Scissors Game!");
-getcomputerchoice = () => {
+const getcomputerchoice = () => {
     const choices = ["rock", "paper", "scissors"];
     const randomIndex = Math.floor(Math.random() * choices.length);
     return choices[randomIndex];
 }
-// console.log(getcomputerchoice());
-gethumanchoice = () => {
-    const choice = prompt("Enter your choice (rock, paper, or scissors):");
-    if (choice === "rock" || choice === "paper" || choice === "scissors") {
-        return choice;
-    } else {
-        console.log("Invalid choice. Please try again.");
-        return gethumanchoice();
-    }
-}
-// console.log(gethumanchoice());
+
 let humanscore = 0;
 let computerscore = 0;
-playround = () => {
-    let humanchoice = gethumanchoice();
-    let computerchoice = getcomputerchoice();
+let gameOver = false;
+const resultDiv = document.querySelector('#result');
+const scoreDiv = document.querySelector('#score');
+function playround(humanchoice) {
+    const computerchoice = getcomputerchoice();
+    let message;
     humanchoice = humanchoice.toLowerCase();
     if(humanchoice === computerchoice) {
-        console.log(`It's a tie! Both chose ${humanchoice}.`);
+        message = `It's a tie! Both chose ${humanchoice}.`;
     } else if((humanchoice === "rock" && computerchoice === "scissors") ||
               (humanchoice === "paper" && computerchoice === "rock") ||
               (humanchoice === "scissors" && computerchoice === "paper")) {
-        console.log(`You win! ${humanchoice} beats ${computerchoice}.`);
+        message = `You win! ${humanchoice} beats ${computerchoice}.`;
         humanscore++;
     } else {
-        console.log(`Computer wins! ${computerchoice} beats ${humanchoice}.`);
+        message = `Computer wins! ${computerchoice} beats ${humanchoice}.`;
         computerscore++;
     }
-}
-playgame = () => {
-    console.log("Starting the game...");
-    console.log("You will play 5 rounds against the computer.");
-    for(let i = 0; i < 5; i++) {
-        playround();
+    resultDiv.textContent = message;
+    scoreDiv.textContent = `Score - You: ${humanscore}, Computer: ${computerscore}`;
+    if(humanscore === 5 || computerscore === 5) {
+        gameOver = true;
+        if(humanscore === 5) {
+            resultDiv.textContent += "\nCongratulations! You won the game!";
+        }
+        else {
+            resultDiv.textContent += "\nSorry! Computer won the game!";
+        }
+        buttons.forEach(button => {
+            button.disabled = true;
+        });
     }
-    console.log(`Final Score - You: ${humanscore}, Computer: ${computerscore}`);
 }
-playgame();
+
+const buttons = document.querySelectorAll('button');
+buttons.forEach(button => {
+    button.addEventListener('click', () => {
+        if(gameOver) return;
+        playround(button.id);
+    });
+});
